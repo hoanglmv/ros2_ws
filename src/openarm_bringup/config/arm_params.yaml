@@ -1,0 +1,16 @@
+# Cấu hình Parameter theo chuẩn ROS 2 cho các node trong hệ thống
+# Cú pháp:
+# <node_name>:
+#   ros__parameters:
+#     <param_key>: <param_value>
+
+arm_joint_publisher:
+  ros__parameters:
+    robot_name: "OpenArm_Pro_6DOF"
+    publish_rate_hz: 5.0
+
+arm_param_demo:
+  ros__parameters:
+    max_speed: 1.5
+    arm_mode: "AUTO"
+    enable_collision_check: true
