@@ -99,10 +99,11 @@ def main(args=None):
         # Giữ node chạy và xử lý callbacks
         rclpy.spin(node)
     except KeyboardInterrupt:
-        node.get_logger().info('Dừng node theo yêu cầu người dùng (Ctrl+C).')
+        pass
     finally:
         node.destroy_node()
-        rclpy.shutdown()
+        if rclpy.ok():
+            rclpy.shutdown()
 
 
 if __name__ == '__main__':

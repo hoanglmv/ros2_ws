@@ -9,23 +9,30 @@ Dự án này đã được biên dịch sẵn, bao gồm đầy đủ mã ngu�
 ## 📑 Mục Lục
 1. [ROS 2 Là Gì & Điểm Khác Biệt Cốt Lõi](#1-ros-2-là-gì--điểm-khác-biệt-cốt-lõi)
 2. [Cấu Trúc Colcon Workspace](#2-cấu-trúc-colcon-workspace)
-3. [Giải Thích Toàn Diện Các Khái Niệm Quan Trọng](#3-giải-thích-toàn-diện-các-khái-niệm-quan-trọng)
-   - [A. Node (Nút tính toán)](#a-node-nút-tính-toán-độc-lập)
+3. [Cẩm Nang Lệnh `colcon build` (Chi Tiết Từ A - Z)](#3-cẩm-nang-lệnh-colcon-build-chi-tiết-từ-a---z)
+   - [A. Colcon Build Là Gì & Cách Hoạt Động](#a-colcon-build-là-gì--cách-hoạt-động)
+   - [B. Cú Pháp Chuẩn & Ý Nghĩa Cờ `--symlink-install`](#b-cú-pháp-chuẩn--ý-nghĩa-cờ---symlink-install)
+   - [C. Các Cờ Tham Số Nâng Cao Thường Dùng](#c-các-cờ-tham-số-nâng-cao-thường-dùng)
+   - [D. Khi Nào Cần Build Lại & Khi Nào Không Cần?](#d-khi-nào-cần-build-lại--khi-nào-không-cần)
+   - [E. Quy Trình Clean Build (Dọn Dẹp Triệt Để Khi Gặp Lỗi)](#e-quy-trình-clean-build-dọn-dẹp-triệt-để-khi-gặp-lỗi)
+4. [Quy Tắc Vàng Về Nạp Môi Trường (Source Environment)](#4-quy-tắc-vàng-về-nạp-môi-trường-source-environment)
+5. [Giải Thích Toàn Diện Các Khái Niệm Quan Trọng](#5-giải-thích-toàn-diện-các-khái-niệm-quan-trọng)
+   - [A. Node (Nút tính toán độc lập)](#a-node-nút-tính-toán-độc-lập)
    - [B. Topic & Message (Truyền tin 1 chiều liên tục)](#b-topic--message-truyền-tin-1-chiều-liên-tục)
    - [C. Service (Giao tiếp Yêu cầu - Phản hồi 1-1)](#c-service-giao-tiếp-yêu-cầu---phản-hồi-1-1)
    - [D. Action (Tác vụ dài hạn có Feedback & Huỷ ngang)](#d-action-tác-vụ-dài-hạn-có-feedback--huỷ-ngang)
    - [E. Parameter (Tham số cấu hình động lúc runtime)](#e-parameter-tham-số-cấu-hình-động-lúc-runtime)
    - [F. QoS (Quality of Service - Chất lượng dịch vụ mạng)](#f-qos-quality-of-service---chất-lượng-dịch-vụ-mạng)
    - [G. Launch File (Hệ thống khởi chạy tự động)](#g-launch-file-hệ-thống-khởi-chạy-tự-động)
-4. [Bảng Tra Cứu Lệnh Dòng Lệnh (CLI Cheat-Sheet Đầy Đủ)](#4-bảng-tra-cứu-lệnh-dòng-lệnh-cli-cheat-sheet-đầy-đủ)
-5. [Hướng Dẫn Thực Hành Step-by-Step (Từng Bước Chi Tiết)](#5-hướng-dẫn-thực-hành-step-by-step-từng-bước-chi-tiết)
+6. [Bảng Tra Cứu Lệnh Dòng Lệnh (CLI Cheat-Sheet Đầy Đủ)](#6-bảng-tra-cứu-lệnh-dòng-lệnh-cli-cheat-sheet-đầy-đủ)
+7. [Hướng Dẫn Thực Hành Step-by-Step (Từng Bước Chi Tiết)](#7-hướng-dẫn-thực-hành-step-by-step-từng-bước-chi-tiết)
    - [Bước 1: Nạp môi trường & Build Workspace](#bước-1-nạp-môi-trường--build-workspace)
    - [Bước 2: Thực hành Node & Topic (Publisher & Subscriber)](#bước-2-thực-hành-node--topic-publisher--subscriber)
    - [Bước 3: Thực hành Service Server & Service Client](#bước-3-thực-hành-service-server--service-client)
    - [Bước 4: Thực hành Action Server & Action Client (Tiến độ thời gian thực)](#bước-4-thực-hành-action-server--action-client-tiến-độ-thời-gian-thực)
    - [Bước 5: Thực hành Đọc & Cập Nhật Parameter Động](#bước-5-thực-hành-đọc--cập-nhật-parameter-động)
    - [Bước 6: Thực hành Chạy Hệ Thống Bằng Launch File & Cấu Hình YAML](#bước-6-thực-hành-chạy-hệ-thống-bằng-launch-file--cấu-hình-yaml)
-6. [Các Lỗi Thường Gặp (Troubleshooting) & Cách Xử Lý Nhanh](#6-các-lỗi-thường-gặp-troubleshooting--cách-xử-lý-nhanh)
+8. [Các Lỗi Thường Gặp (Troubleshooting) & Cách Xử Lý Nhanh](#8-các-lỗi-thường-gặp-troubleshooting--cách-xử-lý-nhanh)
 
 ---
 
@@ -82,7 +89,104 @@ ros2_ws/
 
 ---
 
-## 3. Giải Thích Toàn Diện Các Khái Niệm Quan Trọng
+## 3. Cẩm Nang Lệnh `colcon build` (Chi Tiết Từ A - Z)
+
+### A. Colcon Build Là Gì & Cách Hoạt Động?
+`colcon` (viết tắt của **COLlective CONstruction**) là công cụ biên dịch chính thức của ROS 2 (thay thế cho `catkin_make` trong ROS 1).
+Khi bạn gõ lệnh `colcon build`, công cụ này sẽ:
+1. Quét toàn bộ thư mục `src/` để tìm tất cả các thư mục con có chứa file `package.xml`.
+2. Phân tích đồ thị phụ thuộc (Dependency Graph) để biết package nào cần được build trước, package nào build sau.
+3. Sử dụng đa luồng CPU để build đồng thời nhiều package độc lập.
+4. Gom tất cả các file thực thi, file thư viện, file launch vào thư mục `install/` và tạo sẵn script `setup.bash`.
+
+---
+
+### B. Cú Pháp Chuẩn & Ý Nghĩa Cờ `--symlink-install`
+
+Lệnh build tiêu chuẩn bạn **luôn luôn nên dùng**:
+```bash
+colcon build --symlink-install
+```
+
+> 🌟 **Tại sao cờ `--symlink-install` lại cực kỳ quan trọng?**
+> - **Nếu KHÔNG có `--symlink-install`:** Mỗi lần bạn gõ `colcon build`, colcon sẽ **copy nguyên văn** các file code `.py`, file launch `.py`, file cấu hình `.yaml` từ `src/` sang thư mục `install/`. Khi bạn mở file code trong `src/` ra chỉnh sửa, những sửa đổi đó **sẽ KHÔNG có hiệu lực** cho đến khi bạn chạy lại `colcon build`!
+> - **Khi CÓ `--symlink-install`:** Thay vì copy, colcon sẽ tạo một **liên kết mềm (Symbolic Link)** từ `install/` trỏ ngược về file gốc trong `src/`. Nhờ đó, mỗi lần bạn sửa code Python hoặc sửa file launch, bạn chỉ cần nhấn **Ctrl + S (Lưu file)** là code mới có tác dụng ngay lập tức, **KHÔNG CẦN BUILD LẠI**!
+
+---
+
+### C. Các Cờ Tham Số Nâng Cao Thường Dùng
+
+| Lệnh colcon | Mục đích sử dụng |
+| :--- | :--- |
+| `colcon build --symlink-install` | Build toàn bộ workspace và tạo liên kết mềm (khuyên dùng hàng ngày). |
+| `colcon build --packages-select <pkg_name> --symlink-install` | **Chỉ build duy nhất 1 package chỉ định.** Tiết kiệm thời gian cực lớn khi workspace của bạn có hàng chục package. |
+| `colcon build --packages-up-to <pkg_name> --symlink-install` | Build package chỉ định kèm theo tất cả các package mà nó phụ thuộc vào. |
+| `colcon build --packages-ignore <pkg_name>` | Bỏ qua không build một package nào đó (ví dụ package đang bị lỗi dở dang). |
+| `colcon build --parallel-workers 2` | **Giới hạn số luồng build đồng thời.** Cực kỳ hữu ích khi chạy trên máy yếu hoặc Raspberry Pi để tránh bị tràn RAM (Out of Memory). |
+| `colcon build --continue-on-error` | Nếu một package bị lỗi, colcon vẫn tiếp tục build nốt các package còn lại thay vì dừng ngay lập tức. |
+
+**Ví dụ thực tế:** Chỉ muốn build lại package `openarm_demo_py`:
+```bash
+colcon build --packages-select openarm_demo_py --symlink-install
+```
+
+---
+
+### D. Khi Nào Cần Build Lại & Khi Nào Không Cần?
+
+Nếu bạn đã build với cờ `--symlink-install`, hãy áp dụng bảng quy tắc sau:
+
+| Hành động của bạn | Cần chạy lại `colcon build` không? |
+| :--- | :---: |
+| Chỉnh sửa nội dung logic bên trong file Python có sẵn (`.py`) | ❌ **KHÔNG CẦN** (Chỉ cần lưu file là xong) |
+| Chỉnh sửa nội dung file cấu hình YAML (`.yaml`) | ❌ **KHÔNG CẦN** |
+| Tạo một file Python mới và đăng ký thêm vào `setup.py` | ✅ **CẦN BUILD LẠI** |
+| Thêm thư viện/phụ thuộc mới vào file `package.xml` | ✅ **CẦN BUILD LẠI** |
+| Thêm file launch mới vào thư mục `launch/` | ✅ **CẦN BUILD LẠI** |
+| Viết hoặc sửa code C++ (`.cpp`, `.hpp`) | ✅ **BẮT BUỘC BUILD LẠI** |
+
+---
+
+### E. Quy Trình Clean Build (Dọn Dẹp Triệt Để Khi Gặp Lỗi)
+
+Trong quá trình phát triển, đôi khi bạn đổi tên file, xoá package hoặc sửa cấu hình khiến cache biên dịch cũ bị xung đột và báo lỗi khó hiểu. Khi đó, hãy thực hiện **Clean Build**:
+
+```bash
+# 1. Đi về thư mục gốc workspace:
+cd ~/Project/OpenArm/Demos/ROS2_WS
+
+# 2. Xóa sạch 3 thư mục do colcon tự sinh ra:
+rm -rf build/ install/ log/
+
+# 3. Biên dịch lại từ đầu:
+colcon build --symlink-install
+
+# 4. Nạp lại môi trường:
+source install/setup.bash
+```
+
+---
+
+## 4. Quy Tắc Vàng Về Nạp Môi Trường (Source Environment)
+
+Mỗi khi bạn mở một **cửa sổ Terminal mới**, bạn **bắt buộc** phải nạp 2 script môi trường sau trước khi chạy lệnh:
+
+```bash
+# 1. Nạp ROS 2 hệ thống (Underlay):
+source /opt/ros/humble/setup.bash
+
+# 2. Nạp các package trong workspace của bạn (Overlay):
+source install/setup.bash
+```
+
+> 💡 **Mẹo:** Bạn có thể thêm dòng `source /opt/ros/humble/setup.bash` vào file `~/.bashrc` để không phải gõ lại mỗi lần mở máy:
+> ```bash
+> echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc
+> ```
+
+---
+
+## 5. Giải Thích Toàn Diện Các Khái Niệm Quan Trọng
 
 ### A. Node (Nút tính toán độc lập)
 * **Khái niệm:** Node là một tiến trình thực thi độc lập (Microservice). Mỗi node đảm nhận đúng một nhiệm vụ duy nhất (Ví dụ: 1 node đọc camera, 1 node điều khiển góc quay motor, 1 node hiển thị UI).
@@ -122,11 +226,12 @@ ros2_ws/
 
 ---
 
-## 4. Bảng Tra Cứu Lệnh Dòng Lệnh (CLI Cheat-Sheet Đầy Đủ)
+## 6. Bảng Tra Cứu Lệnh Dòng Lệnh (CLI Cheat-Sheet Đầy Đủ)
 
 | Nhóm lệnh | Cú pháp lệnh | Giải thích chức năng |
 | :--- | :--- | :--- |
 | **Workspace** | `colcon build --symlink-install` | Biên dịch toàn bộ workspace, tạo symlink cho Python |
+| | `colcon build --packages-select <pkg>` | Chỉ biên dịch duy nhất 1 package chỉ định |
 | | `source /opt/ros/humble/setup.bash` | Nạp ROS 2 hệ thống vào terminal hiện tại |
 | | `source install/setup.bash` | Nạp các package trong workspace của bạn |
 | **Node** | `ros2 pkg executables <tên_pkg>` | Liệt kê các node thực thi có sẵn trong package |
@@ -152,7 +257,7 @@ ros2_ws/
 
 ---
 
-## 5. Hướng Dẫn Thực Hành Step-by-Step (Từng Bước Chi Tiết)
+## 7. Hướng Dẫn Thực Hành Step-by-Step (Từng Bước Chi Tiết)
 
 ### Bước 1: Nạp Môi Trường & Build Workspace
 
@@ -316,7 +421,7 @@ Toàn bộ Publisher, Subscriber và Service Server sẽ tự động được k
 
 ---
 
-## 6. Các Lỗi Thường Gặp (Troubleshooting) & Cách Xử Lý Nhanh
+## 8. Các Lỗi Thường Gặp (Troubleshooting) & Cách Xử Lý Nhanh
 
 ### ❌ Lỗi 1: `Package 'openarm_demo_py' not found`
 * **Nguyên nhân:** Cửa sổ Terminal hiện tại chưa được nạp thông tin đường dẫn sau khi build.
